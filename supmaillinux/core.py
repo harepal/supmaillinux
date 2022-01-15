@@ -261,27 +261,30 @@ try:
         fblineparts = fbline.split()
         fblinepartsdate = fblineparts[0] + "-" + fblineparts[1]
 
-        try:
-            fblinepartsdatetime = datetime.strptime(
-                fblinepartsdate, '%Y-%m-%d-%H:%M:%S,%f')
-        except TypeError:
-            fblinepartsdatetime = datetime.fromtimestamp(time.mktime(
-                time.strptime(fblinepartsdate, '%Y-%m-%d-%H:%M:%S,%f')))
+        # Protection logs parasites
+        if fblineparts[0] != "iptables":
 
-        # TODO
-        # TZ UTC
+            try:
+                fblinepartsdatetime = datetime.strptime(
+                    fblinepartsdate, '%Y-%m-%d-%H:%M:%S,%f')
+            except TypeError:
+                fblinepartsdatetime = datetime.fromtimestamp(time.mktime(
+                    time.strptime(fblinepartsdate, '%Y-%m-%d-%H:%M:%S,%f')))
 
-        if (fblinepartsdatetime > (now - timedelta(hours=24))):
-            if len(fblineparts) > 6:  # fix log restart
-                if fblineparts[6] == "Ban":
-                    if fblineparts[5] == jail_ssh:
-                        listSSHBan.append(fblineparts[7])
-                    if fblineparts[5] == jail_401:
-                        listHttpBA.append(fblineparts[7])
-                    if fblineparts[5] == jail_404:
-                        listHttpScan.append(fblineparts[7])
-                    if fblineparts[5] == jail_nc:
-                        listHttpScanNC.append(fblineparts[7])
+            # TODO
+            # TZ UTC
+
+            if (fblinepartsdatetime > (now - timedelta(hours=24))):
+                if len(fblineparts) > 6:  # fix log restart
+                    if fblineparts[6] == "Ban":
+                        if fblineparts[5] == jail_ssh:
+                            listSSHBan.append(fblineparts[7])
+                        if fblineparts[5] == jail_401:
+                            listHttpBA.append(fblineparts[7])
+                        if fblineparts[5] == jail_404:
+                            listHttpScan.append(fblineparts[7])
+                        if fblineparts[5] == jail_nc:
+                            listHttpScanNC.append(fblineparts[7])
 
     setSSHBan = set(listSSHBan)
     setHttpBan = set(listHttpBA)
